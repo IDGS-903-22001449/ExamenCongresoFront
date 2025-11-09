@@ -8,7 +8,7 @@ const Participantes = () => {
   const [cargando, setCargando] = useState(false);
 
   const navigate = useNavigate();
-  const API_BASE = 'https://localhost:7186/api'; // 🔹 Ajusta según tu backend
+  const API_BASE = 'https://backcongreso-1.onrender.com/api';
 
   const cargarUsuarios = async () => {
     try {

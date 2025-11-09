@@ -19,7 +19,8 @@ const Registro = () => {
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  const API_BASE = 'https://localhost:7186/api'; // 🔹 Cambia si tu backend usa otro puerto o dominio
+  const API_BASE = 'https://backcongreso-1.onrender.com/api';
+
 
   // URLs de los 3 avatares disponibles
   const avatars = [

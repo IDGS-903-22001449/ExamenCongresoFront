@@ -9,7 +9,8 @@ const Gafete = () => {
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = "https://localhost:7186/api"; // Ajusta según tu backend
+  const API_BASE = 'https://backcongreso-1.onrender.com/api';
+
 
   useEffect(() => {
     const fetchUsuario = async () => {
