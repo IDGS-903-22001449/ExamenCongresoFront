@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // 👈 para redirigir a /registro o /gafete
+import { useNavigate } from 'react-router-dom';
 
 const Participantes = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -56,7 +56,6 @@ const Participantes = () => {
           Participantes Registrados
         </h2>
 
-        {/* 🔹 Botón para ir al registro */}
         <button
           className="btn btn-success btn-lg shadow-sm"
           onClick={() => navigate('/registro')}
@@ -65,7 +64,6 @@ const Participantes = () => {
         </button>
       </div>
 
-      {/* Cuadro de búsqueda */}
       <div className="row mb-4">
         <div className="col-md-6 mx-auto">
           <input
@@ -78,7 +76,6 @@ const Participantes = () => {
         </div>
       </div>
 
-      {/* Indicador de carga */}
       {cargando && (
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
@@ -87,14 +84,13 @@ const Participantes = () => {
         </div>
       )}
 
-      {/* Listado de tarjetas */}
       <div className="row g-4">
         {usuarios.length > 0 ? (
           usuarios.map((u) => (
             <div
               key={u.id}
               className="col-sm-6 col-md-4 col-lg-3"
-              onClick={() => navigate(`/gafete/${u.id}`)} // 👈 redirige al gafete del usuario
+              onClick={() => navigate(`/gafete/${u.id}`)}
               style={{ cursor: 'pointer' }}
             >
               <div className="card h-100 shadow-sm border-0 hover-shadow">
@@ -120,7 +116,7 @@ const Participantes = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary text-decoration-none"
-                      onClick={(e) => e.stopPropagation()} // Evita redirección si se hace click en el enlace
+                      onClick={(e) => e.stopPropagation()}
                     >
                       @{u.twitter.replace('@', '')}
                     </a>

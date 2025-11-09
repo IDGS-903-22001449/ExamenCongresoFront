@@ -22,7 +22,6 @@ const Registro = () => {
   const API_BASE = 'https://backcongreso-1.onrender.com/api';
 
 
-  // URLs de los 3 avatares disponibles
   const avatars = [
     { id: 1, url: 'https://i.pravatar.cc/150?img=3', label: 'Avatar 1' },
     { id: 2, url: 'https://i.pravatar.cc/150?img=12', label: 'Avatar 2' },

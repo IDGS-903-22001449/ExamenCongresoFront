@@ -1,19 +1,79 @@
+﻿using Microsoft.EntityFrameworkCore;
 using app_congreso.Data;
-using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Conexi�n con PostgreSQL
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// ------------------------
+// Configurar CORS para tu frontend
+// ------------------------
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("https://congresoexamen.netlify.app") // tu frontend
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
 
+// ------------------------
+// Parsear DATABASE_URL de Render
+// ------------------------
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (string.IsNullOrEmpty(databaseUrl))
+{
+    throw new Exception("No se encontró la variable de entorno DATABASE_URL");
+}
+
+var uri = new Uri(databaseUrl);
+var userInfo = uri.UserInfo.Split(':');
+
+var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = uri.Host,
+    Port = uri.Port,
+    Username = userInfo[0],
+    Password = userInfo[1],
+    Database = uri.AbsolutePath.TrimStart('/'),
+    SslMode = SslMode.Require,
+    TrustServerCertificate = true
+};
+
+string connectionString = npgsqlBuilder.ToString();
+
+// ------------------------
+// Configurar DbContext
+// ------------------------
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Agregar controladores
 builder.Services.AddControllers();
+
+// ------------------------
+// Swagger solo en desarrollo
+// ------------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configuraci�n del pipeline HTTP
+// ------------------------
+// Aplicar migraciones automáticamente al iniciar
+// ------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate(); // crea las tablas automáticamente si no existen
+}
+
+// ------------------------
+// Middleware
+// ------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,15 +82,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(options =>
-{
-    options.AllowAnyOrigin();
-    options.AllowAnyMethod();
-    options.AllowAnyHeader();
-});
+// Importante: CORS antes de Authorization y MapControllers
+app.UseCors(MyAllowSpecificOrigins);
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();
